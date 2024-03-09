@@ -1,0 +1,27 @@
+
+<!doctype html>
+<html lang="en" >
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    
+    <title>vhj</title>
+  </head>
+  <body>
+  {% block body_block %}
+  <table>
+    <h1>book details</h1>
+    {%for i in  book %}
+    <tr>
+        <td><img src="{{i.image}}" alt="" width="250" height="250"></td>
+        <td><h3>Bookname:{{i.title}}</h3></td>
+        <td><h3>Author:{{i.author}}</h3></td>
+        
+    {% endfor %}
+  </table>
+  {% endblock %}
+</body>
+</html>

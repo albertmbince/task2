@@ -1,0 +1,9 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="container" style="padding-top: 5cm;text-align: center;height: 10cm;width: 100%;background-image: url(https://media.istockphoto.com/id/1282504465/photo/library-aisle-and-spotlight.jpg?s=612x612&w=0&k=20&c=Sv6-yCXPnBnsJXHs5QYY0czGBKSxgPzVjgiH88cF1xo=);">
+
+    <button class="btn btn-primary" type="submit"><a href="{% url 'add_book' %}" class="nav-link">Add Book</a></button>
+    <button class="btn btn-primary" type="submit"><a href="{% url 'list' %}" class="nav-link">View Book</a></button>
+    <button class="btn btn-primary" type="submit"><a href="{% url 'user_logout' %}" class="nav-link">Logout</a></button>
+</div>
+{% endblock %}

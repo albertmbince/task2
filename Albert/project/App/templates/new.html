@@ -1,0 +1,278 @@
+from django.shortcuts import render,redirect
+
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import authenticate,login,logout
+from App.models import*
+from App.form import*
+
+
+def home(request):
+    return render(request,'base.html')
+def signup(request):
+    if request.method=='POST':
+        username=request.POST.get('username')
+        email=request.POST.get('email')
+        password1=request.POST.get('pass1')
+        password2=request.POST.get('cpass1')
+        if password1==password2:
+            if User.objects.filter(username=username,email=email).exists():
+                    messages.info(request,'username already exists')
+                    print("Already Have")
+            else:
+                new_user=User.objects.create_user(username,email,password1)
+                new_user.save()
+                print('success')
+                return redirect(user_login)
+        else:
+            print("wrong password")
+    return render(request,'signup.html')
+
+def user_login(request):
+    if request.method=='POST':
+        username=request.POST.get('username')
+        password1=request.POST.get('pass1')
+        user=authenticate(request,username=username,password=password1)
+        if user is not None:
+            login(request,user)
+            return redirect(home)
+        else:
+            messages.info(request,'user not exist')
+            print('user not exist')
+            return redirect(user_login)
+    return render(request,'login.html')
+        
+
+def user_logout(request):
+    logout(request)
+    return redirect(user_login)
+
+        
+
+def add_book(request):
+    #  form=bookform()
+     if(request.method=='POST'):
+          d=studentform(request.POST)
+          if d.is_valid():
+            d.save()
+            return redirect(view_book)
+     return render (request,'add_book.html')
+def view_book(request):
+    b=book.objects.all()
+    return render (request,'list.html',{'book':b})
+# def edit(request,a):
+#     m=book.objects.get(pk=a)
+#     form=studentform(instance=m)
+#     if request.method=='POST':
+#         form=studentform(request.POST,instance=m)
+#         if form.is_valid():
+#             form.save()
+#             return home (request)
+#     return render (request,"edit.html",{'form':form})
+# def deleteitem(request,a):
+#     m=book.objects.get(pk=a)
+#     m.delete()
+#     return render (request,'form1.html')
+# def form1(request):
+#     form=studentform()
+#     if request.method=='POST':
+#         form=studentform(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect(form1)
+#     return render (request,'form1.html')
+
+
+
+# Create your views here.
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="ltl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css" integrity="sha384-+qdLaIRZfNu4cVPK/PxJJEy0B0f3Ugv8i482AKY7gwXwhaCroABd086ybrVKTa0q" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>signup</title>
+    <style>
+      body{
+        background-image:url(https://img.freepik.com/free-photo/family-summer-forest-by-open-trunk_1157-35933.jpg?size=626&ext=jpg&ga=GA1.1.894693949.1704448089&semt=ais) ;
+        background-size: cover;
+      }
+      .bar:hover{
+        color: skyblue;
+        transform: scale(1.2);
+        font-weight: 200;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sticky-top" style="text-align: end; background-color:black; height:4rem;color:white;padding-right: 1rem;">
+      <div class="but" style="padding:1rem;display:inline-flex" >
+         
+            <div class="bar"><a
+              href="{% url 'password_reset' %}" class="nav-link" style="padding-right:1rem;">Change password<img src="https://th.bing.com/th/id/OIP.d0GsjmylMY1ycES3CGA4UAHaHa?w=170&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" alt="" style="border-radius: 50%;width:22px;height:22px"></a></div>   
+                 
+                <div class="bar"> <a href="{% url 'home' %}" class="nav-link"style="padding-right:1rem;">Home<img src="https://th.bing.com/th/id/OIP.Qq-ATlyLa9QPUFLNnpD3CwHaHu?w=192&h=201&c=7&r=0&o=5&dpr=1.3&pid=1.7" alt="" style="border-radius: 50%;width:17px;height:17px"></a></div>
+    </div>
+    <section class="vh-100" >
+      <div class="container h-60">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-lg-12 col-xl-11">
+            <div class="card text-yellow" style="border-radius: 25px; background-color:black ;opacity:0.93">
+              <div class="card-body p-md-5">
+                <div class="row justify-content-center">
+                  <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+    
+                    <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4" style="color: #17a8dd;">Sign up</p>
+    
+                    <form class="mx-1 mx-md-4" method='post' style="color: #1db8db;">
+                     {% csrf_token %}
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="text" id="form3Example1c" class="form-control" name='username' style="color: #1db8db;background-color:black">
+                          <label class="form-label" for="form3Example1c">Your Name</label>
+                        </div>
+                      </div>
+    
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="email" id="form3Example3c" class="form-control"name='email' style="color: #1db8db;background-color:black">
+                          <label class="form-label" for="form3Example3c">Your Email</label>
+                        </div>
+                      </div>
+    
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="password" id="form3Example4c" class="form-control" name='pass1' style="color: #1db8db;background-color:black">
+                          <label class="form-label" for="form3Example4c">Password</label>
+                        </div>
+                      </div>
+    
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <input type="password" id="form3Example4cd" class="form-control" name='cpass1' style="color: #1db8db;background-color:black">
+                          <label class="form-label" for="form3Example4cd">Repeat your password</label>
+                        </div>
+                      </div>
+  
+                      <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                      </div>
+    
+                    </form>
+    
+                  </div>
+                  <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+                      
+                    <img src="{% static 'css/image/img1.jpg' %}"
+                      class="img-fluid" alt="Sample image" >
+    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous">
+
+  </script>
+  <style>
+    body {
+     
+      background-image: url(https://wallpapercave.com/wp/wp9295332.jpg);
+      background-size: cover;
+      
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="sticky-top" style="text-align: end; background-color:black; height:4rem;color:white;padding-right: 1rem;">
+    <div class="but" style="padding:1rem;display:inline-flex" >
+       
+          <div class="bar"><a
+            href="{% url 'password_reset' %}" class="nav-link" style="padding-right:1rem;">Change password<img src="https://th.bing.com/th/id/OIP.d0GsjmylMY1ycES3CGA4UAHaHa?w=170&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" alt="" style="border-radius: 50%;width:22px;height:22px"></a></div>   
+               
+              <div class="bar"> <a href="{% url 'home' %}" class="nav-link"style="padding-right:1rem;">Home<img src="https://th.bing.com/th/id/OIP.Qq-ATlyLa9QPUFLNnpD3CwHaHu?w=192&h=201&c=7&r=0&o=5&dpr=1.3&pid=1.7" alt="" style="border-radius: 50%;width:17px;height:17px"></a></div>
+             
+</div>
+  <form method="post">
+    {% csrf_token %}
+    <section class="vh-30 gradient-custom">
+      <div class="container py-5 h-80" >
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-10 col-md-8 col-lg-6 col-xl-4">
+            <div class="card bg-black text-white" style="border-radius: 2rem; opacity:.88">
+              <div class="card-body p-5 text-center">
+
+                <div class="mb-md-4 mt-md-4 pb-5">
+                  <img src="https://th.bing.com/th/id/OIP.0BsEr4u4-epKqPDWZ2D9XgHaHa?w=164&h=180&c=7&r=0&o=5&pid=1.7"
+                    style="border-radius: 50%; width:30%;height:30%">
+
+                  <h2 class="fw-bold mb-1 text-uppercase" style="color: rgb(8, 141, 203);">Login</h2>
+                  <p class="text-yellow-50 mb-3" style="color: rgb(19, 168, 231);">Please enter your login and password!</p>
+
+                  <div class="form-outline form-white mb-1">
+                    <input type="text" id="typeuserX" class="form-control form-control-lg" placeholder="Username"
+                      style="background-color: black; color :rgb(35, 169, 214)" name="username" />
+                    <label class="form-label" for="typeEmailX" style="color: rgb(0, 166, 255);">username</label>
+                  </div>
+
+                  <div class="form-outline form-white mb-0">
+                    <input type="password" id="typePasswordX" class="form-control form-control-lg"
+                      placeholder="Password" style="background-color: black; color :rgb(13, 186, 225,);"
+                      name="pass1" />
+                    <label class="form-label" for="typePasswordX" style="color: rgb(21, 187, 228);">Password</label>
+                  </div>
+
+                  <p class="small mb-2 pb-lg-2"><a class="text-lightskyblue-50" href="{% url 'password_reset' %}">Forgot
+                      password?</a></p>
+
+                  <button class="btn btn-outline-primary btn-lg px-4" type="submit" style="color: rgb(13, 170, 222);">Login</button>
+
+                 
+
+                </div>
+
+
+                <div>
+                  <p class="mb-0" style="color: red;">Don't have an account? <a href="{% url 'signup' %}" class="text-primary-50 fw-bold">Sign
+                      Up</a>
+                  </p>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </form>
+  </section>
+ 
+</body>
+
+</html>
